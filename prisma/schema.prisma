@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Solution {
+  id            String @id @default(uuid()) // Идентификатор
+  titleSolution String // Название
+  valueSolution Float // Количество
+  version       Int
+
+  compositions Composition[] // Ссылка на связанные составы
+
+  @@map(name: "solutions") // Имя таблицы в базе данных
+}
+
+model Composition {
+  id               String @id @default(uuid()) // Идентификатор
+  titleComposition String // Название
+  valueComposition Float // Количество
+
+  solution   Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  solutionId String
+  version    Int
+
+  @@map(name: "compositions") // Имя таблицы в базе данных
+}
+
+// model Solution {
+//   id            String                  @id @default(uuid()) // Идентификатор
+//   titleSolution String // Название
+//   valueSolution Float // Количество
+//   compositions  CompositionOnSolution[] // Связуящая таблица
+// }
+
+// model Composition {
+//   id               String                  @id @default(uuid()) // Идентификатор
+//   titleComposition String // Название
+//   solutions        CompositionOnSolution[] // Связуящая таблица
+// }
+
+// model CompositionOnSolution {
+//   // @relation указывает связь с другими таблицами (fields - ключевое поле таблицы, references - ключевое поле внешней таблицы)
+//   solution   Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   solutionId String
+
+//   composition   Composition @relation(fields: [compositionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   compositionId String
+
+//   valueComposition Float // Количество
+
+//   @@id([solutionId, compositionId])
+// }
